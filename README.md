@@ -1,0 +1,1 @@
+# js-studying__miner
