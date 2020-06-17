@@ -1,0 +1,85 @@
+* {
+    box-sizing: border-box;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.miner-wrap {
+    width: 265px;
+    height: 325px;
+    background-color: rgb(221, 221, 221);
+    border-top: 4px solid #fff;
+    border-left: 4px solid #fff;
+    border-right: 4px solid grey;
+    border-bottom: 4px solid grey;
+}
+.miner-header {
+    height: 50px;
+    width: 235px;
+    padding: 5px 0;
+    margin: 10px auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 4px solid grey;
+    border-left: 4px solid grey;
+    border-right: 4px solid #fff;
+    border-bottom: 4px solid #fff;
+}
+.miner-header__btn {
+    width: 30px;
+    height: 20px;
+}
+
+.miner-header__btn:hover {
+    cursor: pointer;
+}
+#tablo {
+    text-align: right;
+}
+#reset {
+    width: 45px;
+    text-align: center;
+}
+.miner-body {
+    width: 235px;
+    height: 235px;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    border-top: 4px solid grey;
+    border-left: 4px solid grey;
+    border-right: 4px solid #fff;
+    border-bottom: 4px solid #fff;
+}
+.miner-cell {
+    font-size: 10px;
+    width: 25px;
+    height: 25px;
+    /* background-color: rgb(196, 196, 196); */
+    background-image: url('/src/img/closed.svg');
+    background-size: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    text-align: center;
+    border: 1px solid rgb(182, 182, 182);
+}
+.miner-cell--free {
+    background-color: #fff;
+    border: 1px solid rgb(211, 211, 211);
+}
+.miner-cell--bomb {
+    background-image: url('/src/img/flag.png');
+    background-size: contain;
+    background-color: #fff;
+}
+.miner-cell--error {
+    background-image: none;
+    background-color: red;
+}
+.miner-cell:hover {
+    cursor: pointer;
+}
