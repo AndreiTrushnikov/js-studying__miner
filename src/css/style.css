@@ -54,7 +54,8 @@
     border-bottom: 4px solid #fff;
 }
 .miner-cell {
-    font-size: 10px;
+    font-size: 14px;
+    color: blue;
     width: 25px;
     height: 25px;
     background-image: url('/src/img/closed.svg');
@@ -65,14 +66,15 @@
     font-weight: 700;
     text-align: center;
 }
-.miner-cell--free {
-    background-color: #fff;
-    border: 1px solid rgb(211, 211, 211);
-}
 .miner-cell--bomb {
     background-image: url('/src/img/flag.png');
     background-size: contain;
-    background-color: #fff;
+    background-color: rgb(233, 232, 232);
+}
+.miner-cell--free {
+    background-image: none;
+    background-color: rgb(233, 232, 232);
+    border: 1px solid rgb(233, 232, 232);
 }
 .miner-cell--error {
     background-image: none;
