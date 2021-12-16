@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <title>Miner 9*9 = 10 mines</title>
+    <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
 <body>
     <section class="miner">
         <div class="container">
-            <div class="miner-wrap">
+            <div class="miner-wrap  ds">
                 <div class="miner-header">
                     <input class="miner-header__btn" readonly type="text" id="tablo" value="010">
                     <input class="miner-header__btn" readonly type="text" id="reset" value="Start">
@@ -104,10 +103,6 @@
     <div style="display:none">
         <a target="_blank"  href="https://icons8.ru/icons/set/finish-flag">Финишный флажок icon</a> иконка от <a target="_blank" href="https://icons8.ru">Icons8</a>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-    integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
-    crossorigin="anonymous"></script>
-    <script src="js/script.js"></script>
 </body>
 
 </html>
