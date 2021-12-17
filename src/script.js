@@ -3,4 +3,7 @@ import style from './css/style.css'
 import component from './modules/images.js'
 
 // Create Field
-import field from './modules/field.js'
+import Field from './modules/field.js'
+
+let field = new Field(9, 9);
+field.init();
