@@ -1,10 +1,5 @@
-* {
-    box-sizing: border-box;
-}
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
+@import "./vars";
+
 .miner-wrap {
     width: 265px;
     height: 325px;
@@ -14,6 +9,7 @@
     border-right: 4px solid grey;
     border-bottom: 4px solid grey;
 }
+
 .miner-header {
     height: 50px;
     width: 235px;
@@ -27,6 +23,7 @@
     border-right: 4px solid #fff;
     border-bottom: 4px solid #fff;
 }
+
 .miner-header__btn {
     width: 30px;
     height: 20px;
@@ -35,13 +32,16 @@
 .miner-header__btn:hover {
     cursor: pointer;
 }
+
 #tablo {
     text-align: right;
 }
+
 #reset {
     width: 45px;
     text-align: center;
 }
+
 .miner-body {
     width: 235px;
     height: 235px;
@@ -53,6 +53,7 @@
     border-right: 4px solid #fff;
     border-bottom: 4px solid #fff;
 }
+
 .miner-cell {
     font-size: 14px;
     color: blue;
@@ -66,20 +67,24 @@
     font-weight: 700;
     text-align: center;
 }
+
 .miner-cell--bomb {
     background-image: url('/src/img/flag.png');
     background-size: contain;
     background-color: rgb(233, 232, 232);
 }
+
 .miner-cell--free {
     background-image: none;
     background-color: rgb(233, 232, 232);
     border: 1px solid rgb(233, 232, 232);
 }
+
 .miner-cell--error {
     background-image: none;
     background-color: red;
 }
+
 .miner-cell:hover {
     cursor: pointer;
 }
