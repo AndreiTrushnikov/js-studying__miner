@@ -25,21 +25,14 @@
 }
 
 .miner-header__btn {
-    width: 30px;
+    width: 45px;
     height: 20px;
+	text-align: center;
+	font-size: 0.875rem;
 }
 
 .miner-header__btn:hover {
     cursor: pointer;
-}
-
-#tablo {
-    text-align: right;
-}
-
-#reset {
-    width: 45px;
-    text-align: center;
 }
 
 .miner-body {
@@ -55,7 +48,7 @@
 }
 
 .miner-cell {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: blue;
     width: 25px;
     height: 25px;

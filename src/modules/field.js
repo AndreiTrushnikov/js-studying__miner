@@ -1,8 +1,11 @@
-class Field {
+import Rules from './Rules';
+
+export default class Field {
     constructor(row, column) {
         this.row = row;
         this.column = column;
-
+		this.min = 1;
+		this.max = 81;
         this.mainFieldContainer = document.getElementById('miner');
     }
 
@@ -30,7 +33,8 @@ class Field {
         fieldBody.id = 'miner-body';
 
         fieldHeaderEl.appendChild(this.createHeaderInput('tablo', '010'))
-        fieldHeaderEl.appendChild(this.createHeaderInput('reset', 'Start'))
+        fieldHeaderEl.appendChild(this.createHeaderInput('start', 'Start'))
+		fieldHeaderEl.appendChild(this.createHeaderInput('reset', 'Reset'))
         fieldHeaderEl.appendChild(this.createHeaderInput('timer', '000'))
 
 
@@ -58,9 +62,16 @@ class Field {
         return cellEl
     }
 
-    init() {
-        this.createFieldBG()
-    }
+	/*
+	*	Рендер поля, создание правил работы с полем
+	*/
+    render() {
+        this.createFieldBG();
+		const rules = new Rules(
+			document.getElementById("timer"),
+			this.min,
+			this.max
+		);
+		rules.init();
+	}
 }
-
-export default Field;
