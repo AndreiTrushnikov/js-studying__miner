@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --mode production",
-    "dev": "concurrently --kill-others \"webpack -w --mode development\" \"webpack-dev-server --mode development --open\""
+    "start": "concurrently --kill-others \"webpack -w --mode development\" \"webpack-dev-server --mode development --open\""
   },
   "repository": {
     "type": "git",

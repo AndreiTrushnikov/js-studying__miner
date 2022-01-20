@@ -7,7 +7,7 @@ export default class Game {
 	}
 
 	init() {
-		const field = new Field(this.options.x, this.options.y);
+		const field = new Field(this.options.x, this.options.y, this.options.quantityOfMines);
 		field.render();
 	}
 }

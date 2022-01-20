@@ -1,11 +1,12 @@
 import Rules from './Rules';
 
 export default class Field {
-    constructor(row, column) {
+    constructor(row, column, quantityOfMines) {
         this.row = row;
         this.column = column;
 		this.min = 1;
-		this.max = 81;
+		this.max = this.row * this.column;
+		this.quantityOfMines = quantityOfMines;
         this.mainFieldContainer = document.getElementById('miner');
     }
 
@@ -33,8 +34,7 @@ export default class Field {
         fieldBody.id = 'miner-body';
 
         fieldHeaderEl.appendChild(this.createHeaderInput('tablo', '010'))
-        fieldHeaderEl.appendChild(this.createHeaderInput('start', 'Start'))
-		fieldHeaderEl.appendChild(this.createHeaderInput('reset', 'Reset'))
+        fieldHeaderEl.appendChild(this.createHeaderInput('reset', '☻'))
         fieldHeaderEl.appendChild(this.createHeaderInput('timer', '000'))
 
 
@@ -66,11 +66,13 @@ export default class Field {
 	*	Рендер поля, создание правил работы с полем
 	*/
     render() {
+		console.log('this.options.quantityOfMines',this.quantityOfMines);
         this.createFieldBG();
 		const rules = new Rules(
 			document.getElementById("timer"),
 			this.min,
-			this.max
+			this.max,
+			this.quantityOfMines
 		);
 		rules.init();
 	}

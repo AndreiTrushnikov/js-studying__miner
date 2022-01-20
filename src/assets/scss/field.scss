@@ -12,7 +12,7 @@
 
 .miner-header {
     height: 50px;
-    width: 235px;
+    width: 234px;
     padding: 5px 0;
     margin: 10px auto;
     display: flex;
@@ -36,7 +36,8 @@
 }
 
 .miner-body {
-    width: 235px;
+	position: relative;
+    width: 234px;
     height: 235px;
     display: flex;
     flex-wrap: wrap;
@@ -45,14 +46,35 @@
     border-left: 4px solid grey;
     border-right: 4px solid #fff;
     border-bottom: 4px solid #fff;
+	&:after {
+		content: '';
+		width: 100%;
+		height: 1px;
+		background-color: #c9c9c9;
+		position: absolute;
+		bottom: 0;
+		z-index: 1;
+	}
+	&:before {
+		content: '';
+		width: 1px;
+		height: 100%;
+		background-color: rgb(201, 201, 201);
+		position: absolute;
+		right: 0;
+		z-index: 1;
+	}
 }
 
 .miner-cell {
+	position: relative;
+	z-index: 2;
     font-size: 0.875rem;
     color: blue;
     width: 25px;
     height: 25px;
     background-image: url('/src/img/closed.svg');
+	background-repeat: no-repeat;
     background-size: 100%;
     display: flex;
     justify-content: center;
@@ -61,21 +83,28 @@
     text-align: center;
 }
 
-.miner-cell--bomb {
-    background-image: url('/src/img/flag.png');
+.miner-cell--flag {
+    background-image: url('/src/img/flag.svg') !important;
     background-size: contain;
     background-color: rgb(233, 232, 232);
 }
 
 .miner-cell--free {
     background-image: none;
-    background-color: rgb(233, 232, 232);
-    border: 1px solid rgb(233, 232, 232);
+    border-left: 1px solid rgb(201, 201, 201);
+	border-top: 1px solid rgb(201, 201, 201);
+}
+
+.miner-cell--error-main {
+	background-image: url('/src/img/mine_red.svg') !important;
+    background-size: contain;
 }
 
 .miner-cell--error {
-    background-image: none;
-    background-color: red;
+	background-image: url('/src/img/mine.svg');
+    background-size: contain;
+	border-left: 1px solid rgb(201, 201, 201);
+	border-top: 1px solid rgb(201, 201, 201);
 }
 
 .miner-cell:hover {

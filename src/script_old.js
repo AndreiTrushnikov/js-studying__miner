@@ -16,7 +16,7 @@ let placeDescr; // 1 - left top corner, 2 - rtc, 3 - left bottom corner, 4 - rbc
                 // 7 - top horizontal line, 8 - bottom hrizontal line,
                 // 9 - center;
 
-const minesCount = 10; // Количество мин
+// const minesCount = 10; // Количество мин
 const minCell = 1;     // от 1 ячейки
 const maxCell = 81;    // до 81 ячейки
 const maxX = 9;
