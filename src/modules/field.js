@@ -2,7 +2,7 @@ import Rules from './Rules';
 
 export default class Field {
     constructor(row, column, quantityOfMines) {
-        this.row = row;
+		this.row = row;
         this.column = column;
 		this.min = 1;
 		this.max = this.row * this.column;
@@ -72,6 +72,8 @@ export default class Field {
 			document.getElementById("timer"),
 			this.min,
 			this.max,
+			this.row,
+			this.column,
 			this.quantityOfMines
 		);
 		rules.init();

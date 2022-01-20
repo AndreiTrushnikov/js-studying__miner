@@ -3,7 +3,7 @@ import checkTheSameRand from "./utils/checkTheSameRand.js"
 import minmax from "./utils/minmax";
 
 export default class Rules {
-    constructor($root, min, max, quantityOfMines) {
+    constructor($root, min, max, row, column, quantityOfMines) {
 		this.timerId = "";
 		this.$root = $root;
 		this.isGameStart = false;
@@ -11,6 +11,8 @@ export default class Rules {
 
 		this.min = min;
 		this.max = max;
+		this.row = row;
+		this.column = column;
 		this.quantityOfMines = quantityOfMines;
 
 		this.arrWithRandomMines = []; // Массив с ячейками, содержащими мины
@@ -27,7 +29,7 @@ export default class Rules {
 	/*
 	* Создание массива с минами
 	*/
-	createRandomMines(min, max, quantityOfMines, check) {
+	createRandomMines(quantityOfMines, check) {
 		const array = [];
 		// TODO: По окончании работ убрать проверку на check
     	// Создание рандомного числа от мин до макс включая
@@ -47,14 +49,16 @@ export default class Rules {
 	/*
 	* Создаёт объект со всеми необходимыми данными по игре
 	*/
-	createMinesObject(arrWithRandomMines, maxX, maxY) {
+	createMinesObject(arrWithRandomMines) {
+		const maxX = this.row;
+		const maxY = this.column;
 		const minesObj = {};
 		let x = 1;
 		let y = 1;
 		// задание значения place объекта с минами, для обозначения,
 		// где находится выбранная ячейка
-		for (var i = 1; i <= maxX * maxY; i++) {
-			let place;
+		for (let i = 1; i <= maxX * maxY; i++) {
+			let place = '';
 			// 1
 			if (i == "1") {
 				place = "leftTopCorner";
@@ -90,7 +94,6 @@ export default class Rules {
 			else {
 				place = "center";
 			}
-
 			minesObj[i] = {
 				"x": x,
 				"y":y,
@@ -151,8 +154,6 @@ export default class Rules {
 				if (!this.isGameStart) {
 					this.startGame();
 					this.clickOnCell(e.target, this.minesObj);
-					// checkMine(e.target, arrWithRandomMines);
-					// checkCell(e.target, minesObj, false); // проверка ячейки и возврат количества мин рядом
 
 					// if ((numberOfMines == null) || (numberOfMines == 0)) {
 					//     e.target.innerHTML = "";
@@ -161,8 +162,6 @@ export default class Rules {
 					// }
 				} else {
 					this.clickOnCell(e.target, this.minesObj);
-					// checkMine(e.target, arrWithRandomMines);
-					// checkCell(e.target, minesObj, false); // проверка ячейки и возврат количества мин рядом
 
 					// if ((numberOfMines == null) || (numberOfMines == 0)) {
 					//     e.target.innerHTML = "";
@@ -197,28 +196,65 @@ export default class Rules {
 	*/
 	clickOnCell(target, minesObj) {
 		const curId = target.dataset["id"];
-		const isBomb = this.isBomb(minesObj[curId].mine); // проверка на мину
-		console.log("isBomb",isBomb);
-        // если в ячейке бомба - проиграли
+		const isBomb = minesObj[curId].mine; // проверка на мину
+
+		// если в ячейке бомба - проиграли
         if (isBomb) {
             this.loseGame(target, curId);
             return;
         } else {
 			this.checkNumberOfBombs();
+			this.checkWin();
             // иначе проверяем ячейки вокруг текущей
-            // checkSiblings(minesObj, cellID);
+            const count = this.checkSiblings(minesObj, curId);
             // если рядом есть мины, отменяем поиск и ставим в ячейку количество мин рядом
-            // if (count > 0) {
-            //     target.innerText = count;
-            // } else {
-            //     // поиск, если рядом нет мин
-            //     console.log("Начало поиска рядом");
-            //     checkMinesInSiblings(minesObj[cellID].place, cellID);
-            // }
+            if (count > 0) {
+				console.log('Рядом есть бомбы!');
+                target.innerText = count;
+            } else {
+                // поиск, если рядом нет мин
+                console.log("Рядом нет бомб, ищем дальше.");
+                // checkMinesInSiblings(minesObj[curId].place, curId);
+            }
             target.classList.add("miner-cell--free");
             // return count;
         }
     }
+
+
+
+	/*
+	* Проверка соседних ячеек с кликнутой на мины
+	*/
+	checkSiblings(minesObj, curId) {
+		let count = 1;
+		console.log('------------Check Siblings---------');
+		console.log('minesObj',minesObj);
+		console.log('curId', curId);
+		switch (minesObj[curId].place) {
+			case "leftTopCorner":
+				return;
+			case "topHorizontalLine":
+				return;
+			case "rightTopCorner":
+				return;
+			case "leftVerticalLine":
+				return;
+			case "center":
+				return;
+			case "rightVerticalLine":
+				return;
+			case "leftBottomCorner":
+				return;
+			case "bottomHorizontalLine":
+				return;
+			case "rightBottomCorner":
+				return;
+			default:
+				return;
+		}
+		return count;
+	}
 
 
 
@@ -230,7 +266,7 @@ export default class Rules {
 	    target.classList.add("miner-cell--error-main");
 	    console.log("Бабах! Ячейка с миной = ", cellID);
 
-		this.resetGame(true); // Только запрет всех действий
+		this.resetGame(true); // True - только запрет всех действий
 		this.colorAllMines();
 	}
 
@@ -247,15 +283,6 @@ export default class Rules {
 				loserCell.classList.add("miner-cell--error");
 			}
 		}
-	}
-
-
-
-	/*
-	*
-	*/
-	isBomb(target) {
-		if (target === true) {return true;} else {return false;}
 	}
 
 
@@ -282,6 +309,15 @@ export default class Rules {
 
 
 	/*
+	* TODO: Проверка на выигрыш
+	*/
+	checkWin() {
+		// console.log('Check Win');
+	}
+
+
+
+	/*
 	* Запуск правил
 	*/
 	startGame() {
@@ -294,13 +330,12 @@ export default class Rules {
 		this.startTimer(this.$root);
 
 		// Создание массива с id мин
-		this.arrWithRandomMines = this.createRandomMines(this.min, this.max, this.quantityOfMines, true);
+		this.arrWithRandomMines = this.createRandomMines(this.quantityOfMines, true);
 
 		// Создание объекта по работе с данными на основе массива с id
-		this.minesObj = this.createMinesObject(this.arrWithRandomMines, this.min, this.max);
+		this.minesObj = this.createMinesObject(this.arrWithRandomMines);
 
 		console.log("Game Started!");
-		// console.log("this.minesObj ",this.minesObj );
 	}
 
 
@@ -319,8 +354,7 @@ export default class Rules {
 			console.log("Game Just Stopped!");
 		} else {
 			this.stopTimer(false);
-			this.field.classList.remove("lose");
-			this.startGame();
+			this.clearField();
 			console.log("Game Fully Reset!");
 		}
 	}
@@ -331,16 +365,14 @@ export default class Rules {
 	* Очистка поля
 	*/
 	clearField() {
-		console.log('Clear?');
-		if (this.cells) {
-			for (let cell in this.cells) {
-				if (this.cells.hasOwnProperty(cell)) {
-					this.cells[cell].classList.remove("miner-cell--flag");
-					this.cells[cell].classList.remove("miner-cell--error");
-					this.cells[cell].classList.remove("miner-cell--error-main");
-					this.cells[cell].classList.remove("miner-cell--free");
-					this.cells[cell].innerHTML = "";
-				}
+		this.field.classList.remove("lose");
+		for (let cell in this.cells) {
+			if (this.cells.hasOwnProperty(cell)) {
+				this.cells[cell].classList.remove("miner-cell--flag");
+				this.cells[cell].classList.remove("miner-cell--error");
+				this.cells[cell].classList.remove("miner-cell--error-main");
+				this.cells[cell].classList.remove("miner-cell--free");
+				this.cells[cell].innerHTML = "";
 			}
 		}
 	}

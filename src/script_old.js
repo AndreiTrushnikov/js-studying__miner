@@ -1,26 +1,26 @@
 /* Сапёр 9*9 клеток, 10 мин */
 
-let tablo = document.querySelector('#tablo'); // Табло с оставшимися минами
-let startReset = document.getElementById('reset'); // Кнопка начала-сброса
-let cellsBlock = document.getElementById('miner-body'); // Отец всех полей с возможными минами
-let cells = document.getElementsByClassName('miner-cell'); // Множество всех полей с возможными минами
+// let tablo = document.querySelector('#tablo'); // Табло с оставшимися минами
+// let startReset = document.getElementById('reset'); // Кнопка начала-сброса
+// let cellsBlock = document.getElementById('miner-body'); // Отец всех полей с возможными минами
+// let cells = document.getElementsByClassName('miner-cell'); // Множество всех полей с возможными минами
 // let arrWithRandomMines = []; // Массив с ячейками, содержащими мины
-let timer = document.getElementById("timer"); // Input с таймером
-let timerId; // ID таймера
-let tempRand; // Дополнительная переменная для создания массива с минами
+// let timer = document.getElementById("timer"); // Input с таймером
+// let timerId; // ID таймера
+// let tempRand; // Дополнительная переменная для создания массива с минами
 // let minesObj = {}; // Объект для связи мин с ячейками, для их проверки
-let numberOfMines;
-let tempMines = 0;
-let placeDescr; // 1 - left top corner, 2 - rtc, 3 - left bottom corner, 4 - rbc,
+// let numberOfMines;
+// let tempMines = 0;
+// let placeDescr; // 1 - left top corner, 2 - rtc, 3 - left bottom corner, 4 - rbc,
                 // 5 - left vertical line, 6 - right vertical line,
                 // 7 - top horizontal line, 8 - bottom hrizontal line,
                 // 9 - center;
 
 // const minesCount = 10; // Количество мин
-const minCell = 1;     // от 1 ячейки
-const maxCell = 81;    // до 81 ячейки
-const maxX = 9;
-const maxY = 9;
+// const minCell = 1;     // от 1 ячейки
+// const maxCell = 81;    // до 81 ячейки
+// const maxX = 9;
+// const maxY = 9;
 
 
 // // Таймер в хедере
@@ -100,17 +100,17 @@ const maxY = 9;
 // }
 
 // Проверка того, сколько осталось бомб (Нужна проверка для случаев победы или неправильно расположения мин)
-function checkNumberOfBombs() {
-    for (let element in cells) {
-        if (cells.hasOwnProperty(element)) {
-           if (cells[element].classList.contains('miner-cell--bomb')) {
-                tempMines++;
-           }
-        }
-        tablo.value = minesCount - tempMines;
-    }
-    tempMines = 0;
-}
+// function checkNumberOfBombs() {
+//     for (let element in cells) {
+//         if (cells.hasOwnProperty(element)) {
+//            if (cells[element].classList.contains('miner-cell--bomb')) {
+//                 tempMines++;
+//            }
+//         }
+//         tablo.value = minesCount - tempMines;
+//     }
+//     tempMines = 0;
+// }
 
 // Создание общего объекта со всеми ячейками и минами
 // function minesObjFn(arrWithRandomMines,maxX,maxY) {
