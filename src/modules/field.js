@@ -66,7 +66,6 @@ export default class Field {
 	*	Рендер поля, создание правил работы с полем
 	*/
     render() {
-		console.log('this.options.quantityOfMines',this.quantityOfMines);
         this.createFieldBG();
 		const rules = new Rules(
 			document.getElementById("timer"),

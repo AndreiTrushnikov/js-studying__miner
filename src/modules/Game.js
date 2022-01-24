@@ -1,5 +1,4 @@
 import Field from './Field.js'; // Create Field
-import Rules from './Rules.js';
 
 export default class Game {
 	constructor(options) {

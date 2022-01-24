@@ -3,7 +3,7 @@ import checkTheSameRand from "./utils/checkTheSameRand.js"
 import minmax from "./utils/minmax";
 
 export default class Rules {
-    constructor($root, min, max, row, column, quantityOfMines) {
+	constructor($root, min, max, row, column, quantityOfMines) {
 		this.timerId = "";
 		this.$root = $root;
 		this.isGameStart = false;
@@ -22,33 +22,69 @@ export default class Rules {
 		this.cells = document.querySelectorAll(".miner-cell");
 		this.resetBtn = document.querySelector("#reset");
 		this.tablo = document.querySelector("#tablo");
-    }
+
+		this.checkedEmptyCells = [];
+		this.coordsRules = [
+			{
+				x: -1,
+				y: -1,
+			},
+			{
+				x: 0,
+				y: -1,
+			},
+			{
+				x: +1,
+				y: -1,
+			},
+			{
+				x: -1,
+				y: 0,
+			},
+			{
+				x: +1,
+				y: 0,
+			},
+			{
+				x: -1,
+				y: +1,
+			},
+			{
+				x: 0,
+				y: +1,
+			},
+			{
+				x: +1,
+				y: +1,
+			}
+		]
+	}
 
 
 
 	/*
-	* Создание массива с минами
-	*/
+	 * Создание массива с минами
+	 */
 	createRandomMines(quantityOfMines, check) {
 		const array = [];
 		// TODO: По окончании работ убрать проверку на check
-    	// Создание рандомного числа от мин до макс включая
-    	if (check == true) {
-    	    return [2,3,4,34,25,75,8,11,72,74]; // для проверок
-    	} else {
-    	    for (let i = 0; i < quantityOfMines; i++) {
-    	        array[i] = this.checkTheSameRand();
-    	    }
-    	    return array;
-    	}
+		// Создание рандомного числа от мин до макс включая
+		if (check == true) {
+			return [2, 3, 4, 34, 25, 75, 8, 11, 72, 74]; // для проверок
+		} else {
+			for (let i = 0; i < quantityOfMines; i++) {
+				array[i] = this.checkTheSameRand();
+			}
+			return array;
+		}
 	}
 
 
 
 
 	/*
-	* Создаёт объект со всеми необходимыми данными по игре
-	*/
+	 * Создаёт объект со всеми необходимыми данными по игре
+	 */
 	createMinesObject(arrWithRandomMines) {
 		const maxX = this.row;
 		const maxY = this.column;
@@ -58,50 +94,10 @@ export default class Rules {
 		// задание значения place объекта с минами, для обозначения,
 		// где находится выбранная ячейка
 		for (let i = 1; i <= maxX * maxY; i++) {
-			let place = '';
-			// 1
-			if (i == "1") {
-				place = "leftTopCorner";
-			}
-			// 2-8
-			else if ((i>1) && (i<maxX)) {
-				place = "topHorizontalLine";
-			}
-			// 9
-			else if (i == maxX) {
-				place = "rightTopCorner";
-			}
-			// 18,27,36 .. 72
-			else if ((i % maxX == 0) && (i != maxX) && (i != maxX*maxY)) {
-				place = "rightVerticalLine";
-			}
-			// 10,19,28,37
-			else if (((i-1) % maxX == 0) && (i != maxX*maxY - (maxX-1))) {
-				place = "leftVerticalLine";
-			}
-			// 73
-			else if (i == maxX*maxY - (maxX-1)) {
-				place = "leftBottomCorner";
-			}
-			// 74-80
-			else if ((i> maxX*maxY - (maxX-1)) && (i<maxX*maxY)) {
-				place = "bottomHorizontalLine";
-			}
-			// 81
-			else if (i == maxX*maxY) {
-				place = "rightBottomCorner";
-			}
-			else {
-				place = "center";
-			}
 			minesObj[i] = {
 				"x": x,
-				"y":y,
+				"y": y,
 				mine: false,
-				place: place,
-				isCellCheck: false,
-				isSiblingCheck: false,
-				dataId: i
 			};
 			x++;
 			if (x == 10) {
@@ -123,8 +119,8 @@ export default class Rules {
 
 
 	/*
-	* Проверка на уникальность создаваемых id мин
-	*/
+	 * Проверка на уникальность создаваемых id мин
+	 */
 	checkTheSameRand() {
 		const tempRand = Math.round(minmax(this.min, this.max));
 		if (this.arrWithRandomMines.includes(tempRand)) {
@@ -135,10 +131,9 @@ export default class Rules {
 
 
 
-
 	/*
-	* Инициализация прослушивателей кликов
-	*/
+	 * Инициализация прослушивателей кликов
+	 */
 	initDOMListeners() {
 		if (this.resetBtn) {
 			this.resetBtn.addEventListener("click", () => {
@@ -153,37 +148,26 @@ export default class Rules {
 
 				if (!this.isGameStart) {
 					this.startGame();
-					this.clickOnCell(e.target, this.minesObj);
-
-					// if ((numberOfMines == null) || (numberOfMines == 0)) {
-					//     e.target.innerHTML = "";
-					// } else {
-					//     e.target.innerHTML = numberOfMines;
-					// }
+					this.openCell(e.target);
 				} else {
-					this.clickOnCell(e.target, this.minesObj);
-
-					// if ((numberOfMines == null) || (numberOfMines == 0)) {
-					//     e.target.innerHTML = "";
-					// } else {
-					//     e.target.innerHTML = numberOfMines;
-					// }
+					this.openCell(e.target);
 				}
 			})
 
 			// Правый клик по ячейке - установка флажка
 			this.body.addEventListener("contextmenu", (e) => {
-    			e.preventDefault();
+				e.preventDefault();
+				if (e.target.classList.contains("miner-cell--free")) return;
 				if (this.field.classList.contains("lose")) return;
 
-    			e.target.classList.toggle("miner-cell--flag");
-    			if (!this.isGameStart) {
-    			    this.startGame();
-    			    this.checkNumberOfBombs();
-    			} else {
-    			    this.checkNumberOfBombs();
-    			}
-    			return false;
+				e.target.classList.toggle("miner-cell--flag");
+				if (!this.isGameStart) {
+					this.startGame();
+					this.checkNumberOfBombs();
+				} else {
+					this.checkNumberOfBombs();
+				}
+				return false;
 			}, false);
 
 		}
@@ -192,79 +176,135 @@ export default class Rules {
 
 
 	/*
-	* Клик по ячейке
-	*/
-	clickOnCell(target, minesObj) {
-		const curId = target.dataset["id"];
-		const isBomb = minesObj[curId].mine; // проверка на мину
+	 * Клик по ячейке
+	 */
+	openCell(target, cellId = 0) {
+		let curId, nodeEl;
+		if (cellId != 0) {
+			curId = cellId;
+			nodeEl = document.querySelector(`.miner-cell[data-id="${curId}"]`);
+		} else {
+			nodeEl = target;
+			curId = target.dataset["id"];
+		}
 
-		// если в ячейке бомба - проиграли
-        if (isBomb) {
-            this.loseGame(target, curId);
-            return;
-        } else {
-			this.checkNumberOfBombs();
-			this.checkWin();
-            // иначе проверяем ячейки вокруг текущей
-            const count = this.checkSiblings(minesObj, curId);
-            // если рядом есть мины, отменяем поиск и ставим в ячейку количество мин рядом
-            if (count > 0) {
-				console.log('Рядом есть бомбы!');
-                target.innerText = count;
-            } else {
-                // поиск, если рядом нет мин
-                console.log("Рядом нет бомб, ищем дальше.");
-                // checkMinesInSiblings(minesObj[curId].place, curId);
-            }
-            target.classList.add("miner-cell--free");
-            // return count;
-        }
-    }
+		const cellValue = this.checkCell(curId);
+
+		// В зависимости от того, что пришло из метода
+		switch (cellValue) {
+			// 1. Проигрыш
+			case "bomb":
+				this.loseGame(nodeEl, curId);
+				break;
+			// 2. Начало поиска вокруг пустой ячейки
+			case "empty":
+				this.minesObj[curId].empty = true;
+				this.checkSiblingsCoords(curId);
+				nodeEl.classList.add("miner-cell--free");
+				break;
+			// 3. Подстановка числа мин вокруг в ячейку
+			default:
+				nodeEl.innerText = cellValue;
+				nodeEl.classList.add('miner-cell--free');
+				break;
+		}
+	}
 
 
 
 	/*
-	* Проверка соседних ячеек с кликнутой на мины
+	* Проверка ячейки на 1. Мину, 2. Пустую ячейку, 3. Количество мин рядом
 	*/
-	checkSiblings(minesObj, curId) {
-		let count = 1;
-		console.log('------------Check Siblings---------');
-		console.log('minesObj',minesObj);
-		console.log('curId', curId);
-		switch (minesObj[curId].place) {
-			case "leftTopCorner":
-				return;
-			case "topHorizontalLine":
-				return;
-			case "rightTopCorner":
-				return;
-			case "leftVerticalLine":
-				return;
-			case "center":
-				return;
-			case "rightVerticalLine":
-				return;
-			case "leftBottomCorner":
-				return;
-			case "bottomHorizontalLine":
-				return;
-			case "rightBottomCorner":
-				return;
-			default:
-				return;
-		}
+	checkCell(id) {
+		const isBomb = this.minesObj[id].mine; // проверка на мину
+		let count = this.countMinesAroundClickedCell(this.minesObj, id);
+		if (isBomb) return "bomb";
+		if (count == 0) return "empty";
 		return count;
 	}
 
 
 
 	/*
-	* Попадание на ячейку с миной
+	* Поиск всеъ пустых ячеек на поле
 	*/
-	loseGame(target,cellID) {
+	findEmptyCells() {
+		const result = [];
+		for (let item in this.minesObj) {
+			if (this.minesObj[item].empty) {
+				result.push(this.minesObj[item]);
+			}
+		}
+	}
+
+
+
+	/*
+	* Проверка всех соседей вокруг пустой ячейки
+	*/
+	checkSiblingsCoords(id) {
+		const { x, y } = this.minesObj[id];
+		this.coordsRules.forEach((item) => {
+			for (let i in this.minesObj) {
+				if ((this.minesObj[i].x == +x + item.x)
+					&& (this.minesObj[i].y == +y + item.y)
+					&& (!this.minesObj[i].empty)
+					) {
+					this.openCell(null, i);
+				}
+			}
+		})
+	}
+
+
+
+	/*
+	 * Проверка соседних ячеек с кликнутой на мины
+	 */
+	countMinesAroundClickedCell(minesObj, curId) {
+		let count = 0;
+		const leftTop = minesObj[+curId - +this.row - 1];
+		const top = minesObj[+curId - +this.row];
+		const rightTop = minesObj[+curId - +this.row + 1];
+		const left = minesObj[+curId - 1];
+		const right = minesObj[+curId + 1];
+		const leftBottom = minesObj[+curId + +this.row - 1];
+		const bottom = minesObj[+curId + +this.row];
+		const rightBottom = minesObj[+curId + +this.row + 1];
+
+		// 1 2 3
+		// 4   6
+		// 7 8 9
+
+		// Подсчёт количества мин
+		// 1
+		if (leftTop && leftTop.mine) count++;
+		// 2
+		if (top && top.mine) count++;
+		// 3
+		if (rightTop && rightTop.mine) count++;
+		// 4
+		if (left && left.mine) count++;
+		// 6
+		if (right && right.mine) count++;
+		// 7
+		if (leftBottom && leftBottom.mine) count++;
+		// 8
+		if (bottom && bottom.mine) count++;
+		// 9
+		if (rightBottom && rightBottom.mine) count++;
+
+		return count;
+	}
+
+
+
+	/*
+	 * Попадание на ячейку с миной
+	 */
+	loseGame(target, cellID) {
 		this.field.classList.add("lose");
-	    target.classList.add("miner-cell--error-main");
-	    console.log("Бабах! Ячейка с миной = ", cellID);
+		target.classList.add("miner-cell--error-main");
 
 		this.resetGame(true); // True - только запрет всех действий
 		this.colorAllMines();
@@ -273,8 +313,8 @@ export default class Rules {
 
 
 	/*
-	* Подсветка всех мин на поле при проигрыше
-	*/
+	 * Подсветка всех мин на поле при проигрыше
+	 */
 	colorAllMines() {
 		// подсветка всех полей с минами
 		for (let key in this.minesObj) {
@@ -288,17 +328,17 @@ export default class Rules {
 
 
 	/*
-	* Проверка того, сколько осталось бомб
-	* (Нужна для случаев победы или неправильного расположения мин)
-	*/
+	 * Проверка того, сколько осталось бомб
+	 * (Нужна для случаев победы или неправильного расположения мин)
+	 */
 	checkNumberOfBombs() {
 		let tempMines = 0;
 		if (this.cells) {
 			for (let element in this.cells) {
 				if (this.cells.hasOwnProperty(element)) {
-				   if (this.cells[element].classList.contains("miner-cell--flag")) {
+					if (this.cells[element].classList.contains("miner-cell--flag")) {
 						tempMines++;
-				   }
+					}
 				}
 				this.tablo.value = this.quantityOfMines - tempMines;
 			}
@@ -309,8 +349,8 @@ export default class Rules {
 
 
 	/*
-	* TODO: Проверка на выигрыш
-	*/
+	 * TODO: Проверка на выигрыш
+	 */
 	checkWin() {
 		// console.log('Check Win');
 	}
@@ -318,8 +358,8 @@ export default class Rules {
 
 
 	/*
-	* Запуск правил
-	*/
+	 * Запуск правил
+	 */
 	startGame() {
 		console.clear();
 		this.clearField();
@@ -342,8 +382,8 @@ export default class Rules {
 
 
 	/*
-	* Полный сброс игры
-	*/
+	 * Полный сброс игры
+	 */
 	resetGame(isLoose) {
 		this.isGameStart = false;
 		this.isGameLoose = true;
@@ -362,8 +402,8 @@ export default class Rules {
 
 
 	/*
-	* Очистка поля
-	*/
+	 * Очистка поля
+	 */
 	clearField() {
 		this.field.classList.remove("lose");
 		for (let cell in this.cells) {
@@ -380,8 +420,8 @@ export default class Rules {
 
 
 	/*
-	* Запуск таймера игры
-	*/
+	 * Запуск таймера игры
+	 */
 	startTimer() {
 		this.timerId = setInterval(() => timer(this.$root, this.timerId), 1000);
 	}
@@ -389,8 +429,8 @@ export default class Rules {
 
 
 	/*
-	* Окончание работы таймера игры
-	*/
+	 * Окончание работы таймера игры
+	 */
 	stopTimer(isLose) {
 		clearInterval(this.timerId);
 		isLose ? this.$root.value = this.$root.value : this.$root.value = "000";
@@ -399,9 +439,9 @@ export default class Rules {
 
 
 	/*
-	* Инициализация правил игры
-	*/
-    init() {
+	 * Инициализация правил игры
+	 */
+	init() {
 		this.initDOMListeners(this.$root);
-    }
+	}
 }
