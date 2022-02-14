@@ -39,11 +39,9 @@ export default class Field {
 
 
         // Заполняем ячейками body
-        for (let i = 1; i <= this.row; i++) {
-            for (let j = 1; j <= this.column; j++) {
-                fieldBody.appendChild(this.createCell(i, j, counterId))
-                counterId++;
-            }
+        for (let i = 1; i <= this.max; i++) {
+            fieldBody.appendChild(this.createCell(counterId))
+            counterId++;
         }
 
         fieldContEl.appendChild(fieldHeaderEl);
@@ -56,8 +54,7 @@ export default class Field {
         let cellEl = document.createElement('div');
         cellEl.className = className;
         cellEl.dataset.id = counterId;
-        cellEl.textContent = counterId;
-        return cellEl
+		return cellEl
     }
 
 	/*
