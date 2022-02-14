@@ -52,11 +52,9 @@ export default class Field {
         this.mainFieldContainer.appendChild(fieldContEl);
     }
 
-    createCell(x, y, counterId, className = 'miner-cell') {
+    createCell(counterId, className = 'miner-cell') {
         let cellEl = document.createElement('div');
         cellEl.className = className;
-        cellEl.dataset.x = x;
-        cellEl.dataset.y = y;
         cellEl.dataset.id = counterId;
         cellEl.textContent = counterId;
         return cellEl
