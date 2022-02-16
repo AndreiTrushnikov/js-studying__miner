@@ -23,7 +23,6 @@ export default class Rules {
 		this.resetBtn = document.querySelector("#reset");
 		this.tablo = document.querySelector("#tablo");
 
-		this.checkedEmptyCells = [];
 		this.coordsRules = [
 			{
 				x: -1,
@@ -58,6 +57,9 @@ export default class Rules {
 				y: +1,
 			}
 		]
+		// TODO удалить this.t
+		this.t = 0;
+		this.countCheckedCells = 0;
 	}
 
 
@@ -70,7 +72,8 @@ export default class Rules {
 		// TODO: По окончании работ убрать проверку на check
 		// Создание рандомного числа от мин до макс включая
 		if (check == true) {
-			return [2, 3, 4, 34, 25, 75, 8, 11, 72, 74]; // для проверок
+			return [1,2]
+			// return [55, 2, 3, 4, 5, 75,76,77,78,79] // для проверок
 		} else {
 			for (let i = 0; i < quantityOfMines; i++) {
 				array[i] = this.checkTheSameRand();
@@ -98,6 +101,7 @@ export default class Rules {
 				"x": x,
 				"y": y,
 				mine: false,
+				checked: false
 			};
 			x++;
 			if (x == 10) {
@@ -143,33 +147,98 @@ export default class Rules {
 
 		if (this.body) {
 			this.body.addEventListener("click", (e) => {
-				if (e.target.classList.contains("miner-body")) return;
+				let curCell = e.target;
+
 				if (this.field.classList.contains("lose")) return;
+				if (this.field.classList.contains("winner")) return;
+
+				if (curCell.classList.contains("miner-body")) return;
+				if (curCell.classList.contains("miner-cell--flag")) return;
+				if (curCell.classList.contains("miner-cell--free")) return;
 
 				if (!this.isGameStart) {
 					this.startGame();
-					this.openCell(e.target);
+					this.openCell(curCell);
+					this.checkWin();
 				} else {
-					this.openCell(e.target);
+					this.openCell(curCell);
+					this.checkWin();
 				}
 			})
 
 			// Правый клик по ячейке - установка флажка
 			this.body.addEventListener("contextmenu", (e) => {
 				e.preventDefault();
-				if (e.target.classList.contains("miner-cell--free")) return;
-				if (this.field.classList.contains("lose")) return;
+				let curCell = e.target;
 
-				e.target.classList.toggle("miner-cell--flag");
-				if (!this.isGameStart) {
-					this.startGame();
-					this.checkNumberOfBombs();
-				} else {
-					this.checkNumberOfBombs();
+				if (this.field.classList.contains("lose")) return;
+				if (this.field.classList.contains("winner")) return;
+				if (!curCell.classList.contains('miner-cell')) return;
+				if (curCell.classList.contains("miner-cell--free")) return;
+
+				if (this.isGameStart) {
+					curCell.classList.toggle("miner-cell--flag");
+					this.checkNumberOfBombs(curCell);
+					this.checkWin();
 				}
 				return false;
 			}, false);
 
+		}
+	}
+
+
+
+	/*
+	 * Метод при выигрыше
+	 */
+	win() {
+		this.field.classList.add("winner");
+		this.resetGame(true);
+		this.drawAllFlags();
+	}
+
+
+
+	/*
+	* Метод для отрисовки флагов ячейках, которые не были проверены
+	*/
+	drawAllFlags() {
+		for (let cell in this.minesObj) {
+			if (this.minesObj[cell].mine) {
+				document.querySelector(`[data-id="${cell}"`).classList.add('miner-cell--flag')
+			}
+		}
+	}
+
+
+
+	/*
+	 * Проверка на выигрыш
+	 */
+	checkWin() {
+		if (this.countCheckedCells === (this.row * this.column - this.quantityOfMines)) {
+			this.win();
+		}
+	}
+
+
+
+	/*
+	 * Подсчёт количества бомб на табло
+	 */
+	checkNumberOfBombs() {
+		let tempMines = 0;
+		if (this.cells) {
+			for (let element in this.cells) {
+				if (this.cells.hasOwnProperty(element)) {
+					if (this.cells[element].classList.contains("miner-cell--flag")) {
+						tempMines++;
+					}
+				}
+				this.tablo.value = this.quantityOfMines - tempMines;
+			}
+			tempMines = 0;
 		}
 	}
 
@@ -198,13 +267,22 @@ export default class Rules {
 				break;
 			// 2. Начало поиска вокруг пустой ячейки
 			case "empty":
-				this.minesObj[curId].empty = true;
+				this.minesObj[curId].checked = true;
 				this.checkSiblingsCoords(curId);
+
+				this.countCheckedCells++;
+
 				nodeEl.classList.add("miner-cell--free");
 				break;
 			// 3. Подстановка числа мин вокруг в ячейку
 			default:
+				if (nodeEl.classList.contains('miner-cell--free')) return;
+
+				this.minesObj[curId].checked = true;
 				nodeEl.innerText = cellValue;
+
+				this.countCheckedCells++;
+
 				nodeEl.classList.add('miner-cell--free');
 				break;
 		}
@@ -216,25 +294,12 @@ export default class Rules {
 	* Проверка ячейки на 1. Мину, 2. Пустую ячейку, 3. Количество мин рядом
 	*/
 	checkCell(id) {
-		const isBomb = this.minesObj[id].mine; // проверка на мину
-		let count = this.countMinesAroundClickedCell(this.minesObj, id);
+		// debugger
+		let isBomb = this.minesObj[id].mine; // проверка на мину
+		let count = this.countMinesAroundClickedCell(id);
 		if (isBomb) return "bomb";
 		if (count == 0) return "empty";
 		return count;
-	}
-
-
-
-	/*
-	* Поиск всеъ пустых ячеек на поле
-	*/
-	findEmptyCells() {
-		const result = [];
-		for (let item in this.minesObj) {
-			if (this.minesObj[item].empty) {
-				result.push(this.minesObj[item]);
-			}
-		}
 	}
 
 
@@ -246,10 +311,9 @@ export default class Rules {
 		const { x, y } = this.minesObj[id];
 		this.coordsRules.forEach((item) => {
 			for (let i in this.minesObj) {
+				if (this.minesObj[i].checked) continue;
 				if ((this.minesObj[i].x == +x + item.x)
-					&& (this.minesObj[i].y == +y + item.y)
-					&& (!this.minesObj[i].empty)
-					) {
+					&& (this.minesObj[i].y == +y + item.y)) {
 					this.openCell(null, i);
 				}
 			}
@@ -259,41 +323,21 @@ export default class Rules {
 
 
 	/*
-	 * Проверка соседних ячеек с кликнутой на мины
+	 * Подсчёт мин вокруг ячейки
 	 */
-	countMinesAroundClickedCell(minesObj, curId) {
+	countMinesAroundClickedCell(curId) {
 		let count = 0;
-		const leftTop = minesObj[+curId - +this.row - 1];
-		const top = minesObj[+curId - +this.row];
-		const rightTop = minesObj[+curId - +this.row + 1];
-		const left = minesObj[+curId - 1];
-		const right = minesObj[+curId + 1];
-		const leftBottom = minesObj[+curId + +this.row - 1];
-		const bottom = minesObj[+curId + +this.row];
-		const rightBottom = minesObj[+curId + +this.row + 1];
+		const { x, y } = this.minesObj[curId];
 
-		// 1 2 3
-		// 4   6
-		// 7 8 9
-
-		// Подсчёт количества мин
-		// 1
-		if (leftTop && leftTop.mine) count++;
-		// 2
-		if (top && top.mine) count++;
-		// 3
-		if (rightTop && rightTop.mine) count++;
-		// 4
-		if (left && left.mine) count++;
-		// 6
-		if (right && right.mine) count++;
-		// 7
-		if (leftBottom && leftBottom.mine) count++;
-		// 8
-		if (bottom && bottom.mine) count++;
-		// 9
-		if (rightBottom && rightBottom.mine) count++;
-
+		this.coordsRules.forEach((item) => {
+			for (let i in this.minesObj) {
+				if ((this.minesObj[i].x == +x + item.x)
+					&& (this.minesObj[i].y == +y + item.y)
+					&& (this.minesObj[i].mine)) {
+					count++;
+				}
+			}
+		})
 		return count;
 	}
 
@@ -302,7 +346,7 @@ export default class Rules {
 	/*
 	 * Попадание на ячейку с миной
 	 */
-	loseGame(target, cellID) {
+	loseGame(target) {
 		this.field.classList.add("lose");
 		target.classList.add("miner-cell--error-main");
 
@@ -328,36 +372,6 @@ export default class Rules {
 
 
 	/*
-	 * Проверка того, сколько осталось бомб
-	 * (Нужна для случаев победы или неправильного расположения мин)
-	 */
-	checkNumberOfBombs() {
-		let tempMines = 0;
-		if (this.cells) {
-			for (let element in this.cells) {
-				if (this.cells.hasOwnProperty(element)) {
-					if (this.cells[element].classList.contains("miner-cell--flag")) {
-						tempMines++;
-					}
-				}
-				this.tablo.value = this.quantityOfMines - tempMines;
-			}
-			tempMines = 0;
-		}
-	}
-
-
-
-	/*
-	 * TODO: Проверка на выигрыш
-	 */
-	checkWin() {
-		// console.log('Check Win');
-	}
-
-
-
-	/*
 	 * Запуск правил
 	 */
 	startGame() {
@@ -370,12 +384,13 @@ export default class Rules {
 		this.startTimer(this.$root);
 
 		// Создание массива с id мин
-		this.arrWithRandomMines = this.createRandomMines(this.quantityOfMines, true);
+		this.arrWithRandomMines = this.createRandomMines(this.quantityOfMines, false);
 
 		// Создание объекта по работе с данными на основе массива с id
 		this.minesObj = this.createMinesObject(this.arrWithRandomMines);
 
 		console.log("Game Started!");
+		console.log(this.minesObj);
 	}
 
 
@@ -384,12 +399,13 @@ export default class Rules {
 	/*
 	 * Полный сброс игры
 	 */
-	resetGame(isLoose) {
+	resetGame(isCancelActivities) {
 		this.isGameStart = false;
 		this.isGameLoose = true;
 		this.arrWithRandomMines = [];
+		this.countCheckedCells = 0;
 
-		if (isLoose) {
+		if (isCancelActivities) {
 			this.stopTimer(true);
 			console.log("Game Just Stopped!");
 		} else {
@@ -406,6 +422,7 @@ export default class Rules {
 	 */
 	clearField() {
 		this.field.classList.remove("lose");
+		this.field.classList.remove("winner");
 		for (let cell in this.cells) {
 			if (this.cells.hasOwnProperty(cell)) {
 				this.cells[cell].classList.remove("miner-cell--flag");

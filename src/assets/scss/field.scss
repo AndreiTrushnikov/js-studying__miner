@@ -1,20 +1,26 @@
 @import "./vars";
 
+#miner {
+	width: 300px;
+}
+
 .miner-wrap {
-    width: 265px;
-    height: 325px;
+	width: auto;
+    height: auto;
     background-color: rgb(221, 221, 221);
     border-top: 4px solid #fff;
     border-left: 4px solid #fff;
     border-right: 4px solid grey;
     border-bottom: 4px solid grey;
+	padding: 15px;
 }
 
 .miner-header {
     height: 50px;
-    width: 234px;
+	width: auto;
+    height: auto;
     padding: 5px 0;
-    margin: 10px auto;
+    margin: 0 auto 10px;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -37,8 +43,8 @@
 
 .miner-body {
 	position: relative;
-    width: 234px;
-    height: 235px;
+	width: auto;
+    height: auto;
     display: flex;
     flex-wrap: wrap;
     margin: 0 auto;
@@ -93,6 +99,9 @@
     background-image: none;
     border-left: 1px solid rgb(201, 201, 201);
 	border-top: 1px solid rgb(201, 201, 201);
+	&:hover {
+		cursor: default !important;
+	}
 }
 
 .miner-cell--error-main {

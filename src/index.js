@@ -1,6 +1,5 @@
 // Styles, Scripts
 import style from './assets/scss/index.scss'
-import component from './assets/images.js';
 
 import Game from './modules/Game';
 

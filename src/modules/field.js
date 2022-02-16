@@ -33,9 +33,9 @@ export default class Field {
 
         fieldBody.id = 'miner-body';
 
-        fieldHeaderEl.appendChild(this.createHeaderInput('tablo', '010'))
-        fieldHeaderEl.appendChild(this.createHeaderInput('reset', '☻'))
-        fieldHeaderEl.appendChild(this.createHeaderInput('timer', '000'))
+        fieldHeaderEl.appendChild(this.createHeaderInput('tablo', this.quantityOfMines));
+        fieldHeaderEl.appendChild(this.createHeaderInput('reset', '☻'));
+        fieldHeaderEl.appendChild(this.createHeaderInput('timer', '000'));
 
 
         // Заполняем ячейками body
@@ -58,10 +58,27 @@ export default class Field {
     }
 
 	/*
+	*	Определение ширины поля
+	*/
+	calculateFieldWidth() {
+		const cellWidth = 25;
+		const minerWrapPadding = 15;
+		const borderWidth = 4;
+		const error = 14;
+
+		let minerBodyWidth = this.column * cellWidth + borderWidth * 2; // 233px
+		let mainFieldWidth = minerBodyWidth + borderWidth * 2 + minerWrapPadding + error;
+
+		document.querySelector('.miner-body').style.width = minerBodyWidth + 'px';
+		document.querySelector('#miner').style.width = mainFieldWidth + 'px';
+	}
+
+	/*
 	*	Рендер поля, создание правил работы с полем
 	*/
     render() {
         this.createFieldBG();
+		this.calculateFieldWidth();
 		const rules = new Rules(
 			document.getElementById("timer"),
 			this.min,
