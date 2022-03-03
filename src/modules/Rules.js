@@ -60,6 +60,8 @@ export default class Rules {
 		// TODO удалить this.t
 		this.t = 0;
 		this.countCheckedCells = 0;
+		this.leftMouseBtnPressed = false;
+		this.rightMouseBtnPressed = false;
 	}
 
 
@@ -72,8 +74,8 @@ export default class Rules {
 		// TODO: По окончании работ убрать проверку на check
 		// Создание рандомного числа от мин до макс включая
 		if (check == true) {
-			return [1,2]
-			// return [55, 2, 3, 4, 5, 75,76,77,78,79] // для проверок
+			// return [1,2]
+			return [55, 2, 3, 4, 5, 75,76,77,78,79] // для проверок
 		} else {
 			for (let i = 0; i < quantityOfMines; i++) {
 				array[i] = this.checkTheSameRand();
@@ -134,6 +136,13 @@ export default class Rules {
 	}
 
 
+	checkFieldOnWinLooseClasses(field) {
+		if (field.classList.contains("lose")) return true;
+		if (field.classList.contains("winner")) return true;
+
+		return false;
+	}
+
 
 	/*
 	 * Инициализация прослушивателей кликов
@@ -146,45 +155,153 @@ export default class Rules {
 		}
 
 		if (this.body) {
-			this.body.addEventListener("click", (e) => {
-				let curCell = e.target;
+			let that = this;
+			let leftMouseBtnCode = 1;
+			let rightMouseBtnCode = 3;
 
-				if (this.field.classList.contains("lose")) return;
-				if (this.field.classList.contains("winner")) return;
-
-				if (curCell.classList.contains("miner-body")) return;
-				if (curCell.classList.contains("miner-cell--flag")) return;
-				if (curCell.classList.contains("miner-cell--free")) return;
-
-				if (!this.isGameStart) {
-					this.startGame();
-					this.openCell(curCell);
-					this.checkWin();
-				} else {
-					this.openCell(curCell);
-					this.checkWin();
-				}
-			})
-
-			// Правый клик по ячейке - установка флажка
 			this.body.addEventListener("contextmenu", (e) => {
 				e.preventDefault();
-				let curCell = e.target;
-
-				if (this.field.classList.contains("lose")) return;
-				if (this.field.classList.contains("winner")) return;
-				if (!curCell.classList.contains('miner-cell')) return;
-				if (curCell.classList.contains("miner-cell--free")) return;
-
-				if (this.isGameStart) {
-					curCell.classList.toggle("miner-cell--flag");
-					this.checkNumberOfBombs(curCell);
-					this.checkWin();
-				}
 				return false;
 			}, false);
 
+			this.body.addEventListener("mouseover", function (e) {
+				if (e.target.classList.contains('miner-cell') && e.which == leftMouseBtnCode) {
+					if (that.checkFieldOnWinLooseClasses(that.field)) return;
+
+					e.target.classList.add("miner-cell--free-cur");
+				}
+			})
+
+			this.body.addEventListener("mouseout", function (e) {
+				if (e.target.classList.contains('miner-cell')) {
+					e.target.classList.remove("miner-cell--free-cur");
+				}
+			})
+
+			this.body.addEventListener("mousedown", function(e) {
+				let curCell = e.target;
+
+  			  	if (e.which == leftMouseBtnCode) {
+					if (that.checkFieldOnWinLooseClasses(that.field)) return;
+
+					that.leftMouseBtnPressed = true;
+
+					curCell.classList.add("miner-cell--free-cur");
+				}
+
+  			  	if (e.which == rightMouseBtnCode) {
+					that.rightMouseBtnPressed = true;
+
+					if (that.leftMouseBtnPressed && curCell.classList.contains('miner-cell--free')) {
+						console.log('ОБЕ!');
+						that.checkTwoPressedBtnsCell(curCell, true);
+					}
+				}
+  			});
+
+			this.body.addEventListener("mouseup", function(e) {
+				let curCell = e.target;
+
+				if (e.which == leftMouseBtnCode) {
+					console.log("Левая отпущена");
+					that.leftMouseBtnPressed = false;
+
+					curCell.classList.remove("miner-cell--free-cur");
+
+					if (curCell.classList.contains("miner-cell--flag")) return;
+					if (curCell.classList.contains("miner-cell--free")) return;
+
+					if (!that.isGameStart) {
+						that.startGame();
+						that.openCell(curCell);
+						that.checkWin();
+					} else {
+						that.openCell(curCell);
+						that.checkWin();
+					}
+				}
+
+				if (e.which == rightMouseBtnCode) {
+					that.checkTwoPressedBtnsCell(curCell, false);
+  			    	console.log("Правая отпущена");
+					that.rightMouseBtnPressed = false;
+
+					if (that.checkFieldOnWinLooseClasses(that.field)) return;
+					if (!curCell.classList.contains('miner-cell')) return;
+					if (curCell.classList.contains("miner-cell--free")) return;
+
+					if (that.isGameStart) {
+						curCell.classList.toggle("miner-cell--flag");
+						that.checkNumberOfBombs(curCell);
+						that.checkWin();
+					}
+				}
+			});
 		}
+	}
+
+	// this.coordsRules = [
+	// 	{
+	// 		x: -1,
+	// 		y: -1,
+	// 	},
+	// 	{
+	// 		x: 0,
+	// 		y: -1,
+	// 	},
+	// 	{
+	// 		x: +1,
+	// 		y: -1,
+	// 	},
+	// 	{
+	// 		x: -1,
+	// 		y: 0,
+	// 	},
+	// 	{
+	// 		x: +1,
+	// 		y: 0,
+	// 	},
+	// 	{
+	// 		x: -1,
+	// 		y: +1,
+	// 	},
+	// 	{
+	// 		x: 0,
+	// 		y: +1,
+	// 	},
+	// 	{
+	// 		x: +1,
+	// 		y: +1,
+	// 	}
+	// ]
+
+	checkTwoPressedBtnsCell(cell, isShow) {
+		let id = cell.dataset['id'];
+		const { x, y } = this.minesObj[id];
+		let isMineNear = false;
+
+		console.log('this.minesObj',this.minesObj);
+		this.coordsRules.forEach((item) => {
+			for (let i in this.minesObj) {
+				if (this.minesObj[i].checked) continue;
+				if ((this.minesObj[i].x == +x + item.x)	&& (this.minesObj[i].y == +y + item.y)) {
+					let curCheckedCell = document.querySelector(`[data-id="${i}"]`);
+
+					if (curCheckedCell.classList.contains('miner-cell--flag')) isMineNear = true;
+
+					if (isShow) {
+						curCheckedCell.classList.add('miner-cell--free-cur');
+					} else {
+						curCheckedCell.classList.remove('miner-cell--free-cur');
+					}
+
+					if (isShow && isMineNear) {
+						curCheckedCell.classList.add('miner-cell--free-cur');
+						this.checkSiblingsCoords(i, true);
+					}
+				}
+			}
+		})
 	}
 
 
@@ -247,43 +364,37 @@ export default class Rules {
 	/*
 	 * Клик по ячейке
 	 */
-	openCell(target, cellId = 0) {
-		let curId, nodeEl;
-		if (cellId != 0) {
-			curId = cellId;
-			nodeEl = document.querySelector(`.miner-cell[data-id="${curId}"]`);
-		} else {
-			nodeEl = target;
-			curId = target.dataset["id"];
-		}
-
+	openCell(target) {
+		if (target.classList.contains('miner-cell--flag')) return;
+		const curId = target.dataset["id"];
+		// debugger
 		const cellValue = this.checkCell(curId);
 
 		// В зависимости от того, что пришло из метода
 		switch (cellValue) {
 			// 1. Проигрыш
-			case "bomb":
-				this.loseGame(nodeEl, curId);
+			case -1:
+				this.loseGame(target, curId);
 				break;
 			// 2. Начало поиска вокруг пустой ячейки
-			case "empty":
+			case 0:
 				this.minesObj[curId].checked = true;
-				this.checkSiblingsCoords(curId);
+				this.checkSiblingsCoords(curId, false);
 
 				this.countCheckedCells++;
 
-				nodeEl.classList.add("miner-cell--free");
+				target.classList.add("miner-cell--free");
 				break;
 			// 3. Подстановка числа мин вокруг в ячейку
 			default:
-				if (nodeEl.classList.contains('miner-cell--free')) return;
+				if (target.classList.contains('miner-cell--free')) return;
 
 				this.minesObj[curId].checked = true;
-				nodeEl.innerText = cellValue;
+				target.innerText = cellValue;
 
 				this.countCheckedCells++;
 
-				nodeEl.classList.add('miner-cell--free');
+				target.classList.add('miner-cell--free');
 				break;
 		}
 	}
@@ -294,11 +405,10 @@ export default class Rules {
 	* Проверка ячейки на 1. Мину, 2. Пустую ячейку, 3. Количество мин рядом
 	*/
 	checkCell(id) {
-		// debugger
 		let isBomb = this.minesObj[id].mine; // проверка на мину
 		let count = this.countMinesAroundClickedCell(id);
-		if (isBomb) return "bomb";
-		if (count == 0) return "empty";
+		if (isBomb) return -1;
+		if (count == 0) return 0;
 		return count;
 	}
 
@@ -307,17 +417,30 @@ export default class Rules {
 	/*
 	* Проверка всех соседей вокруг пустой ячейки
 	*/
-	checkSiblingsCoords(id) {
+	checkSiblingsCoords(id, isTwoPressedBtnsCheck) {
 		const { x, y } = this.minesObj[id];
+		const count = this.countMinesAroundClickedCell(id);
+		let curCount = 0;
+
+		// debugger
 		this.coordsRules.forEach((item) => {
 			for (let i in this.minesObj) {
 				if (this.minesObj[i].checked) continue;
-				if ((this.minesObj[i].x == +x + item.x)
-					&& (this.minesObj[i].y == +y + item.y)) {
-					this.openCell(null, i);
+				if ((this.minesObj[i].x == +x + item.x)	&& (this.minesObj[i].y == +y + item.y)) {
+					if (document.querySelector(`[data-id="${i}"]`).classList.contains('miner-cell--flag')) curCount++;
+					this.openCell(document.querySelector(`[data-id="${i}"]`));
 				}
 			}
 		})
+
+		console.log('curCount',curCount);
+		console.log('count', count);
+		// document.querySelector(`[data-id="${i}"]`).style.backgroundColor = 'green';
+		if (isTwoPressedBtnsCheck && (count === curCount)) {
+			// if (this.minesObj[i].mine) {
+				console.log('!!!!!!!!!r45');
+			// }
+		}
 	}
 
 
@@ -384,7 +507,7 @@ export default class Rules {
 		this.startTimer(this.$root);
 
 		// Создание массива с id мин
-		this.arrWithRandomMines = this.createRandomMines(this.quantityOfMines, false);
+		this.arrWithRandomMines = this.createRandomMines(this.quantityOfMines, true);
 
 		// Создание объекта по работе с данными на основе массива с id
 		this.minesObj = this.createMinesObject(this.arrWithRandomMines);
@@ -429,6 +552,7 @@ export default class Rules {
 				this.cells[cell].classList.remove("miner-cell--error");
 				this.cells[cell].classList.remove("miner-cell--error-main");
 				this.cells[cell].classList.remove("miner-cell--free");
+				this.cells[cell].classList.remove("miner-cell--free-cur");
 				this.cells[cell].innerHTML = "";
 			}
 		}

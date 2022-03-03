@@ -95,10 +95,17 @@
     background-color: rgb(233, 232, 232);
 }
 
+.miner-cell--free-cur,
 .miner-cell--free {
     background-image: none;
     border-left: 1px solid rgb(201, 201, 201);
 	border-top: 1px solid rgb(201, 201, 201);
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 	&:hover {
 		cursor: default !important;
 	}
